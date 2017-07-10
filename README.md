@@ -2,10 +2,15 @@
 
 Advanced genetic and evolutionary algorithm library written in Javascript by [Sub Protocol](http://subprotocol.com/).
 
+## Fork 
+This fork by [framp](http://framp.me) removes the automatic spinning of a new web worker.
+
+I believe spinning a new web worker should be responsibility of the user and coupling it to an optimisation library just worsen the experience for developers.
+This fork is perfectly compatible with web workers - you just need to manage it yourself.
 
 #### Rational
 
-The existing Javascript GA/EP library landscape could collectively be summed up as, meh. All that I required to take over the world was a lightweight, performant, feature-rich, nodejs + browser compatible, unit tested, and easily hackable GA/EP library.  Seamless [Web Worker](http://en.wikipedia.org/wiki/Web_worker) support would be the icing on my cake.
+The existing Javascript GA/EP library landscape could collectively be summed up as, meh. All that I required to take over the world was a lightweight, performant, feature-rich, nodejs + browser compatible, unit tested, and easily hackable GA/EP library.
 
 Until now, no such thing existed. Now you can have my cake, and optimize it too. Is it perfect? *Probably*. Regardless, this library is my gift to you.
 
@@ -39,7 +44,7 @@ The genetic-js interface exposes a few simple concepts and primitives, you just 
 | select1(population)                       | Individual               | Yes        | See [Selection](#selection) section below
 | select2(population)                       | Individual               | Optional   | Selects a pair of individuals from a population. [Selection](#selection)
 | generation(pop, gen, stats)               | Boolean                  | Optional   | Called for each generation.  Return false to terminate end algorithm (ie- if goal state is reached)
-| notification(pop, gen, stats, isFinished) | Void                     | Optional   | Runs in the calling context. All functions other than this one are run in a web worker.
+| notification(pop, gen, stats, isFinished) | Void                     | Optional   | Runs in the calling context.
 
 
 ## Optimizer
@@ -105,8 +110,7 @@ genetic.select2 = Genetic.Select2.FittestRandom;
 | mutation              | 0.2      | [0.0, 1.0]  | Probability of mutation
 | iterations            | 100      | Real Number | Maximum number of iterations before finishing
 | fittestAlwaysSurvives | true     | Boolean     | Prevents losing the best fit between generations
-| maxResults            | 100      | Real Number | The maximum number of best-fit results that webworkers will send per notification
-| webWorkers            | true     | Boolean     | Use [Web Workers](http://en.wikipedia.org/wiki/Web_worker) (when available)
+| maxResults            | 100      | Real Number | The maximum number of best-fit results that will be sent per notification
 | skip                  | 0        | Real Number | Setting this higher throttles back how frequently `genetic.notification` gets called in the main thread.
 
 

@@ -1,24 +1,24 @@
 {
-  "name": "genetic-js",
-  "version": "0.1.14",
-  "description": "Advanced genetic and evolutionary algorithm library",
+  "name": "genetic-js-no-ww",
+  "version": "0.2.0",
+  "description": "Advanced genetic and evolutionary algorithm library (no web workers fork)",
   "main": "lib/genetic.js",
   "scripts": {
     "test": "make check"
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/subprotocol/genetic-js"
+    "url": "git://github.com/framp/genetic-js"
   },
   "bugs": {
-    "url": "https://github.com/subprotocol/genetic-js/issues"
+    "url": "https://github.com/framp/genetic-js/issues"
   },
   "keywords": [
     "genetic",
     "evolution",
     "algorithm"
   ],
-  "author": "subprotocol <smprotocol@gmail.com> (http://subprotocol.com/)",
+  "author": "Federico Rampazzo <frampone@gmail.com>",
   "license": "BSD",
   "readmeFilename": "README.md",
   "devDependencies": {

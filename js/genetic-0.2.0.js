@@ -101,7 +101,6 @@ var Genetic = Genetic || (function(){
 			, "iterations": 100
 			, "fittestAlwaysSurvives": true
 			, "maxResults": 100
-			, "webWorkers": true
 			, "skip": 0
 		};
 		
@@ -109,9 +108,7 @@ var Genetic = Genetic || (function(){
 		this.internalGenState = {};
 		
 		this.entities = [];
-		
-		this.usingWebWorker = false;
-		
+				
 		this.start = function() {
 			
 			var i;
@@ -153,14 +150,14 @@ var Genetic = Genetic || (function(){
 					, "stdev": stdev
 				};
 
-				var r = this.generation ? this.generation(pop.slice(0, this.configuration["maxResults"]), i, stats) : true;
+				var r = this.generation ? this.generation(pop, i, stats) : true;
 				var isFinished = (typeof r != "undefined" && !r) || (i == this.configuration.iterations-1);
 				
 				if (
 					this.notification
 					&& (isFinished || this.configuration["skip"] == 0 || i%this.configuration["skip"] == 0)
 				) {
-					this.sendNotification(pop.slice(0, this.configuration["maxResults"]), i, stats, isFinished);
+					this.sendNotification(pop.slice(0, this.maxResults), i, stats, isFinished);
 				}
 					
 				if (isFinished)
@@ -198,14 +195,7 @@ var Genetic = Genetic || (function(){
 				, "isFinished": isFinished
 			};
 			
-			
-			if (this.usingWebWorker) {
-				postMessage(response);
-			} else {
-				// self declared outside of scope
-				self.notification(response.pop.map(Serialization.parse), response.generation, response.stats, response.isFinished);
-			}
-			
+			this.notification(response.pop.map(Serialization.parse), response.generation, response.stats, response.isFinished);
 		};
 	}
 	
@@ -219,54 +209,7 @@ var Genetic = Genetic || (function(){
 		for (k in userData) {
 			this.userData[k] = userData[k];
 		}
-		
-		// determine if we can use webworkers
-		this.usingWebWorker = this.configuration.webWorkers
-			&& typeof Blob != "undefined"
-			&& typeof Worker != "undefined"
-			&& typeof window.URL != "undefined"
-			&& typeof window.URL.createObjectURL != "undefined";
-		
-		function addslashes(str) {
-			return str.replace(/[\\"']/g, '\\$&').replace(/\u0000/g, '\\0');
-		}
-			
-		// bootstrap webworker script
-		var blobScript = "'use strict'\n";
-		blobScript += "var Serialization = {'stringify': " + Serialization.stringify.toString() + ", 'parse': " + Serialization.parse.toString() + "};\n";
-		blobScript += "var Clone = " + Clone.toString() + ";\n";
-		
-		// make available in webworker
-		blobScript += "var Optimize = Serialization.parse(\"" + addslashes(Serialization.stringify(Optimize)) + "\");\n";
-		blobScript += "var Select1 = Serialization.parse(\"" + addslashes(Serialization.stringify(Select1)) + "\");\n";
-		blobScript += "var Select2 = Serialization.parse(\"" + addslashes(Serialization.stringify(Select2)) + "\");\n";
-		
-		// materialize our ga instance in the worker
-		blobScript += "var genetic = Serialization.parse(\"" + addslashes(Serialization.stringify(this)) + "\");\n";
-		blobScript += "onmessage = function(e) { genetic.start(); }\n";
-		
-		var self = this;
-		
-		if (this.usingWebWorker) {
-			// webworker
-			var blob = new Blob([blobScript]);
-			var worker = new Worker(window.URL.createObjectURL(blob));
-			worker.onmessage = function(e) {
-			  var response = e.data;
-			  self.notification(response.pop.map(Serialization.parse), response.generation, response.stats, response.isFinished);
-			};
-			worker.onerror = function(e) {
-				alert('ERROR: Line ' + e.lineno + ' in ' + e.filename + ': ' + e.message);
-			};
-			worker.postMessage("");
-		} else {
-			// simulate webworker
-			(function(){
-				var onmessage;
-				eval(blobScript);
-				onmessage(null);
-			})();
-		}
+		this.start();
 	}
 	
 	return {
