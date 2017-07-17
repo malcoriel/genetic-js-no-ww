@@ -1,4 +1,4 @@
-# Genetic.js
+# Genetic.js (-no-ww)
 
 Advanced genetic and evolutionary algorithm library written in Javascript by [Sub Protocol](http://subprotocol.com/).
 
@@ -6,7 +6,14 @@ Advanced genetic and evolutionary algorithm library written in Javascript by [Su
 This fork by [framp](http://framp.me) removes the automatic spinning of a new web worker.
 
 I believe spinning a new web worker should be responsibility of the user and coupling it to an optimisation library just worsen the experience for developers.
+
 This fork is perfectly compatible with web workers - you just need to manage it yourself.
+
+The package is available via npm:
+
+```
+npm install genetic-js-no-ww
+```
 
 #### Rational
 
